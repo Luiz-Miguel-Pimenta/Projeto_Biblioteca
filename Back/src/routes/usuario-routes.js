@@ -5,7 +5,8 @@ import { UsuarioController } from "../controllers/usuarios-controller.js";
 const usuariosRoutes = Router();
 const usuarioController = new UsuarioController();
 
-usuariosRoutes.use("/criar", usuarioController.criar)
+usuariosRoutes.post("/login", usuarioController.login)
+usuariosRoutes.post("/cadastro", usuarioController.cadastro)
 
 
 export { usuariosRoutes }

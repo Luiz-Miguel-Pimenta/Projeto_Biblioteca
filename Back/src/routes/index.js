@@ -4,10 +4,10 @@ import { emprestimosRoutes } from "./emprestimo-routes.js";
 import { usuariosRoutes } from "./usuario-routes.js";
 import { livrosRoutes } from "./livros-routes.js";
 
-const routes = Router();
+const rotasApp = Router();
 
-routes.use("/emprestimo", emprestimosRoutes);
-routes.use("/usuario", usuariosRoutes);
-routes.use("/livro", livrosRoutes);
+rotasApp.use("/emprestimo", emprestimosRoutes);
+rotasApp.use("/usuario", usuariosRoutes);
+rotasApp.use("/livro", livrosRoutes);
 
-export { routes }
+export { rotasApp }

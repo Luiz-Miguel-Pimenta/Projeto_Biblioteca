@@ -1,26 +1,21 @@
-import express from "express";
-import db from "./database/db.js";
+import express from "express"
 
-const app = express();
+import { rotasApp } from "./routes/index.js"
+import { errorApp } from "./middlewares/errorApp.js"
 
-app.use(express.json());
+const PORT = 3000
+const App = express()
 
-app.get("/teste", async (req, res) => {
-  try {
-    const [rows] = await db.query(
-      "SELECT * FROM livro"
-    );
+App.use(express.json())
+App.use(rotasApp)
 
-    res.status(200).json(rows);
-  } catch (erro) {
-    console.error(erro);
 
-    res.status(500).json({
-      erro: "Falha na conexão com o banco de dados",
-    });
-  }
-});
+App.get('/', (req, res) => {
+  res.send('Hello World!')
+})
 
-app.listen(3000, () => {
-  console.log("Servidor rodando na porta 3000");
-});
+App.use(errorApp);
+
+App.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`)
+})
