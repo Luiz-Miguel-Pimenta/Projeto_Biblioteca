@@ -5,6 +5,7 @@ import { LivroController } from "../controllers/livros-controller.js";
 const livrosRoutes = Router();
 const livroController = new LivroController();
 
-livrosRoutes.use("/criar", livroController.criar)
+livrosRoutes.get("/livros", livroController.buscarLivros);
+livrosRoutes.post("/livros", livroController.criarLivro);
 
-export { livrosRoutes }
+export { livrosRoutes };
