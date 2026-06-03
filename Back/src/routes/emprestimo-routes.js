@@ -5,6 +5,7 @@ import { EmprestimoController } from "../controllers/emprestimos-controller.js";
 const emprestimosRoutes = Router();
 const emprestimoController = new EmprestimoController()
 
-emprestimosRoutes.use("/criar", emprestimoController.criar)
+emprestimosRoutes.post("/criar", emprestimoController.criar)
+
 
 export { emprestimosRoutes }
