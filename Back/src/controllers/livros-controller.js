@@ -1,18 +1,17 @@
+import { z } from "zod";
+
 import { database } from "../database/db.js";
-import { z, ZodError } from "zod";
+import { AppError } from "../utils/AppError.js";
 
 const livroSchema = z.object({
   titulo: z.string().trim().min(1, { message: "O título é obrigatório." }),
-
   autor: z.string().trim().min(1, { message: "O autor é obrigatório." }),
-
   ano_publicacao: z
     .number()
     .int()
     .min(1000)
     .max(new Date().getFullYear())
     .optional(),
-
   quantidade_disponivel: z
     .number()
     .int()
@@ -21,62 +20,50 @@ const livroSchema = z.object({
 
 class LivroController {
   // GET ALL
-  async buscarLivros(req, res) {
+  async buscarLivros(req, res, next) {
+
     try {
       const [result] = await database.promise().query("SELECT * FROM livro");
 
       if (result.length === 0) {
-        return res.status(404).json({
-          mensagem: "Nenhum livro encontrado!",
-        });
+        throw new AppError("Nenhum livro encontrado", 404);
       }
 
       return res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
 
-      return res.status(500).json({
-        mensagem: "Erro ao buscar livros!",
-      });
+    } catch (error) {
+      console.log(error);
+      next(error)
     }
   }
 
   // GET BY ID
-  async buscarLivrosPorID(req, res) {
+  async buscarLivrosPorID(req, res, next) {
     try {
       const { id } = req.params;
 
       if (isNaN(id)) {
-        return res.status(400).json({
-          mensagem: "ID inválido!",
-        });
+        throw new AppError("ID inválido!", 400);
       }
 
-      const [result] = await database
-        .promise()
-        .query("SELECT * FROM livro WHERE id = ?", [id]);
+      const [result] = await database.promise().query("SELECT * FROM livro WHERE id = ?", [id]);
 
       if (result.length === 0) {
-        return res.status(404).json({
-          mensagem: "Livro não encontrado!",
-        });
+        throw new AppError("Nenhum livro encontrado", 404);
       }
 
       return res.status(200).json(result[0]);
-    } catch (error) {
-      console.error(error);
 
-      return res.status(500).json({
-        mensagem: "Erro ao buscar livro!",
-      });
+    } catch (error) {
+      console.log(error);
+      next(error)
     }
   }
 
   // POST
-  async criarLivro(req, res) {
+  async criarLivro(req, res, next) {
     try {
-      const { titulo, autor, ano_publicacao, quantidade_disponivel } =
-        livroSchema.parse(req.body);
+      const { titulo, autor, ano_publicacao, quantidade_disponivel } = livroSchema.parse(req.body);
 
       const [livroExistente] = await database
         .promise()
@@ -86,9 +73,7 @@ class LivroController {
         ]);
 
       if (livroExistente.length > 0) {
-        return res.status(409).json({
-          mensagem: "Livro já cadastrado!",
-        });
+        throw new AppError("Livro já cadastrado!", 409);
       }
 
       const [result] = await database.promise().query(
@@ -102,30 +87,20 @@ class LivroController {
         mensagem: "Livro criado com sucesso!",
         id: result.insertId,
       });
+
     } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          mensagem: error.issues[0].message,
-        });
-      }
-
-      console.error(error);
-
-      return res.status(500).json({
-        mensagem: "Erro ao criar livro!",
-      });
+      console.log(error);
+      next(error)
     }
   }
 
   // PUT
-  async atualizarLivro(req, res) {
+  async atualizarLivro(req, res, next) {
     try {
       const { id } = req.params;
 
       if (isNaN(id)) {
-        return res.status(400).json({
-          mensagem: "ID inválido!",
-        });
+        throw new AppError("ID inválido!", 400);
       }
 
       const { titulo, autor, ano_publicacao, quantidade_disponivel } =
@@ -139,38 +114,26 @@ class LivroController {
       );
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({
-          mensagem: "Livro não encontrado!",
-        });
-      }
+        throw new AppError("Livro não encontrado!", 404);
+      };
 
       return res.status(200).json({
         mensagem: "Livro atualizado com sucesso!",
       });
+
     } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          mensagem: error.issues[0].message,
-        });
-      }
-
-      console.error(error);
-
-      return res.status(500).json({
-        mensagem: "Erro ao atualizar livro!",
-      });
+      console.log(error);
+      next(error)
     }
   }
 
   // DELETE
-  async excluirLivro(req, res) {
+  async excluirLivro(req, res, next) {
     try {
       const { id } = req.params;
 
       if (isNaN(id)) {
-        return res.status(400).json({
-          mensagem: "ID inválido!",
-        });
+        throw new AppError("ID inválido!", 400);
       }
 
       const [result] = await database
@@ -178,20 +141,16 @@ class LivroController {
         .query("DELETE FROM livro WHERE id = ?", [id]);
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({
-          mensagem: "Livro não encontrado!",
-        });
+        throw new AppError("Livro não encontrado!", 404);
       }
 
       return res.status(200).json({
         mensagem: "Livro excluído com sucesso!",
       });
-    } catch (error) {
-      console.error(error);
 
-      return res.status(500).json({
-        mensagem: "Erro ao excluir livro!",
-      });
+    } catch (error) {
+      console.log(error);
+      next(error)
     }
   }
 }

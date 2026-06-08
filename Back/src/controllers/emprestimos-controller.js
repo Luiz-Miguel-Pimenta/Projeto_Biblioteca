@@ -1,37 +1,35 @@
+import { z } from "zod";
+
 import { database } from "../database/db.js"
+import { AppError } from "../utils/AppError.js";
 
 class EmprestimoController {
 
     // POST - Criar empréstimo (apenas leitor)
-    async criar(req, res) {
-        const { livro_id, leitor_id, data_devolucao_prevista } = req.body;
-        const data_emprestimo = new Date();
-        const db = database.promise();
-
+    async criar(req, res, next) {
         try {
-            const [usuarios] = await db.query(`SELECT * FROM usuario WHERE id = ?`, [leitor_id]);
+            const emprestimoSchema = z.object({
+                livro_id: z.number().int().positive({ message: "ID do livro inválido." }),
+            })
 
-            if (usuarios.length === 0) {
-                return res.status(404).json({ message: "Usuário não encontrado" });
-            }
+            const { livro_id } = emprestimoSchema.parse(req.body);
+            const leitor_id = req.usuario.id;
 
-            if (usuarios[0].perfil !== 'leitor') {
-                return res.status(403).json({ message: "Apenas leitores podem solicitar empréstimos" });
-            }
+            const data_emprestimo = new Date();
+            const data_devolucao_prevista = new Date(data_emprestimo);
+            data_devolucao_prevista.setDate(data_devolucao_prevista.getDate() + 30);
 
-            const [livros] = await db.query(`SELECT * FROM livro WHERE id = ?`, [livro_id]);
+            const [livros] = await database.promise().query(`SELECT * FROM livro WHERE id = ?`, [livro_id]);
 
             if (livros.length === 0) {
-                return res.status(404).json({ message: "Livro não encontrado" });
+                throw new AppError("Livro não encontrado", 404);
             }
 
             if (livros[0].quantidade_disponivel <= 0) {
-                return res.status(400).json({ message: "Livro indisponível" });
+                throw new AppError("Livro indisponível. Sem estoque.", 400);
             }
 
-            
-
-            const [resultado] = await db.query(`
+            const [result] = await database.promise().query(`
                 INSERT INTO emprestimo (livro_id, leitor_id, data_emprestimo, data_devolucao_prevista, status) VALUES (?, ?, ?, ?, ?)`, [
                 livro_id,
                 leitor_id,
@@ -41,25 +39,27 @@ class EmprestimoController {
             ]);
 
             
-            await db.query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel - 1 WHERE id = ?`, [livro_id]);
+            await database.promise().query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel - 1 WHERE id = ?`, [livro_id]);
 
             return res.status(201).json({
                 message: "Empréstimo criado com sucesso!",
-                id: resultado.insertId
+                id: result.insertId,
+                livro_id, 
+                leitor_id, 
+                data_emprestimo,
+                data_devolucao_prevista
             });
 
         } catch (error) {
-            console.error("Erro ao criar empréstimo:", error);
-            return res.status(500).json({ message: "Erro interno no servidor", error: error.message });
+            console.log(error);
+            next(error);
         }
     }
 
     // GET ALL - apenas bibliotecário
-    async listar(req, res) {
-        const db = database.promise();
-
+    async listar(req, res, next) {
         try {
-            await db.query(`
+            await database.promise().query(`
                 UPDATE emprestimo 
                 SET status = 'atrasado' 
                 WHERE status = 'ativo' 
@@ -67,59 +67,49 @@ class EmprestimoController {
                 AND data_devolucao_real IS NULL
             `);
 
-            
-            const [result] = await db.query(`SELECT * FROM emprestimo`);
+            const [result] = await database.promise().query(`SELECT * FROM emprestimo`);
 
             if (result.length === 0) {
-                return res.status(404).json({ message: "Nenhum empréstimo encontrado" });
+                throw new AppError("Nenhum empréstimo encontrado", 404);
             }
 
             return res.status(200).json(result);
 
         } catch (error) {
             console.error("Erro ao listar empréstimos:", error);
-            return res.status(500).json({ message: "Erro interno no servidor", error: error.message });
+            next(error)
         }
     }
 
     // GET ID - apenas bibliotecário
-    async listarPorId(req, res) {
-        const db = database.promise();
-
+    async listarPorId(req, res, next) {
         try {
             const { id } = req.params;
 
             if (isNaN(id)) {
-                return res.status(400).json({ message: "ID inválido!" });
+                throw new AppError("ID inválido!", 400);
             }
-
             
-            const [result] = await db.query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
+            const [result] = await database.promise().query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
 
             if (result.length === 0) {
-                return res.status(404).json({ message: "Empréstimo não encontrado" });
+                throw new AppError("Empréstimo não encontrado", 404);
             }
 
             return res.status(200).json(result[0]);
 
         } catch (error) {
             console.error("Erro ao listar empréstimo:", error);
-            return res.status(500).json({ message: "Erro interno no servidor", error: error.message });
+            next(error)
         }
     }
 
     // GET por leitor - apenas leitor
-    async listarPorLeitor(req, res) {
-        const db = database.promise();
-
+    async listarPorLeitor(req, res, next) {
         try {
-            const { leitor_id } = req.params;
+            const leitor_id = req.usuario.id;
 
-            if (isNaN(leitor_id)) {
-                return res.status(400).json({ message: "ID de leitor inválido!" });
-            }
-
-            await db.query(`
+            await database.promise().query(`
                 UPDATE emprestimo 
                 SET status = 'atrasado' 
                 WHERE status = 'ativo' 
@@ -127,110 +117,74 @@ class EmprestimoController {
                 AND data_devolucao_real IS NULL
             `);
 
-            
-            const [result] = await db.query(`SELECT * FROM emprestimo WHERE leitor_id = ? AND status IN ('ativo', 'atrasado')`, [leitor_id]);
+            const [result] = await database.promise().query(`SELECT * FROM emprestimo WHERE leitor_id = ? AND status IN ('ativo', 'atrasado')`, [leitor_id]);
 
             if (result.length === 0) {
-                return res.status(404).json({ message: "Nenhum empréstimo ativo encontrado para este leitor" });
+                throw new AppError("Nenhum empréstimo feito até o momento", 404);
             }
 
             return res.status(200).json(result);
 
         } catch (error) {
             console.error("Erro ao listar empréstimos do leitor:", error);
-            return res.status(500).json({ message: "Erro interno no servidor", error: error.message });
+            next(error)
         }
     }
 
     // PUT - apenas bibliotecário
-    async registrarDevolucao(req, res) {
-        const db = database.promise();
-
+    async registrarDevolucao(req, res, next) {
         try {
             const { id } = req.params;
-            const { bibliotecario_id } = req.body;
             const data_devolucao_real = new Date();
 
+            const [emprestimo] = await database.promise().query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
+
+            if (emprestimo.length === 0) {
+                throw new AppError("Empréstimo não encontrado", 404);
+            }
+
+            if (emprestimo[0].status === 'devolvido') {
+                throw new AppError("Este empréstimo já foi devolvido", 400);
+            }
             
-            const [usuarios] = await db.query(`SELECT * FROM usuario WHERE id = ?`, [bibliotecario_id]);
+            await database.promise().query(`UPDATE emprestimo SET data_devolucao_real = ?, status = ? WHERE id = ?`, [data_devolucao_real, 'devolvido', id]);
 
-            if (usuarios.length === 0) {
-                return res.status(404).json({ message: "Usuário não encontrado" });
-            }
-
-            if (usuarios[0].perfil !== 'bibliotecario') {
-                return res.status(403).json({ message: "Apenas bibliotecários podem aprovar devoluções" });
-            }
-
-            
-            const [emprestimos] = await db.query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
-
-            if (emprestimos.length === 0) {
-                return res.status(404).json({ message: "Empréstimo não encontrado" });
-            }
-
-            const emprestimo = emprestimos[0];
-
-            if (emprestimo.status === 'devolvido') {
-                return res.status(400).json({ message: "Este empréstimo já foi devolvido" });
-            }
-
-            
-            await db.query(`UPDATE emprestimo SET data_devolucao_real = ?, status = ? WHERE id = ?`, [data_devolucao_real, 'devolvido', id]);
-
-            await db.query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel + 1 WHERE id = ?`, [emprestimo.livro_id]);
+            await database.promise().query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel + 1 WHERE id = ?`, [emprestimo[0].livro_id]);
 
             return res.status(200).json({ message: "Devolução registrada com sucesso!" });
 
         } catch (error) {
             console.error("Erro ao registrar devolução:", error);
-            return res.status(500).json({ message: "Erro interno no servidor", error: error.message });
+            next(error)
         }
     }
 
     // DELETE - apenas bibliotecário
-    async deletar(req, res) {
-        const db = database.promise();
-
+    async deletar(req, res, next) {
         try {
             const { id } = req.params;
-            const { bibliotecario_id } = req.body;
 
             if (isNaN(id)) {
-                return res.status(400).json({ message: "ID inválido!" });
+                throw new AppError("ID inválido!", 400);
+            }
+  
+            const [emprestimo] = await database.promise().query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
+
+            if (emprestimo.length === 0) {
+                throw new AppError("Empréstimo não encontrado", 404);
             }
 
-            
-            const [usuarios] = await db.query(`SELECT * FROM usuario WHERE id = ?`, [bibliotecario_id]);
-
-            if (usuarios.length === 0) {
-                return res.status(404).json({ message: "Usuário não encontrado" });
+            if (emprestimo[0].status === 'ativo' || emprestimo[0].status === 'atrasado') {
+                await database.promise().query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel + 1 WHERE id = ?`, [emprestimo[0].livro_id]);
             }
 
-            if (usuarios[0].perfil !== 'bibliotecario') {
-                return res.status(403).json({ message: "Apenas bibliotecários podem cancelar empréstimos" });
-            }
-
-            
-            const [emprestimos] = await db.query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
-
-            if (emprestimos.length === 0) {
-                return res.status(404).json({ message: "Empréstimo não encontrado" });
-            }
-
-            const emprestimo = emprestimos[0];
-
-            if (emprestimo.status === 'ativo' || emprestimo.status === 'atrasado') {
-                await db.query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel + 1 WHERE id = ?`, [emprestimo.livro_id]);
-            }
-
-            await db.query(`DELETE FROM emprestimo WHERE id = ?`, [id]);
+            await database.promise().query(`DELETE FROM emprestimo WHERE id = ?`, [id]);
 
             return res.status(200).json({ message: "Empréstimo cancelado com sucesso!" });
 
         } catch (error) {
             console.error("Erro ao deletar empréstimo:", error);
-            return res.status(500).json({ message: "Erro interno no servidor", error: error.message });
+            next(error);
         }
     }
 }

@@ -2,25 +2,18 @@ import { Router } from "express";
 
 import { EmprestimoController } from "../controllers/emprestimos-controller.js";
 
+import { autentificacaoToken } from "../middlewares/autentificacaoToken.js";
+import { autorizacaoPerfil } from "../middlewares/autorizacaoPerfil.js";
+
 const emprestimosRoutes = Router();
 const emprestimoController = new EmprestimoController()
 
-// Criar empréstimo (Leitor)
-emprestimosRoutes.post("/criar", emprestimoController.criar);
+emprestimosRoutes.post("/criar", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.criar);
+emprestimosRoutes.get("/emprestimos-leitor", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.listarPorLeitor);
 
-// Listar empréstimos do leitor
-emprestimosRoutes.get("/leitor/:leitor_id", emprestimoController.listarPorLeitor);
-
-// Listar todos os empréstimos (Bibliotecário)
-emprestimosRoutes.get("/", emprestimoController.listar);
-
-// Buscar empréstimo por ID (Bibliotecário)
-emprestimosRoutes.get("/:id", emprestimoController.listarPorId);
-
-// Registrar devolução (Bibliotecário)
-emprestimosRoutes.put("/:id/devolucao", emprestimoController.registrarDevolucao);
-
-// Cancelar empréstimo (Bibliotecário)
-emprestimosRoutes.delete("/:id", emprestimoController.deletar);
+emprestimosRoutes.get("/", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listar);
+emprestimosRoutes.get("/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listarPorId);
+emprestimosRoutes.patch("/:id/devolucao", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.registrarDevolucao);
+emprestimosRoutes.delete("/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.deletar);
 
 export { emprestimosRoutes }
