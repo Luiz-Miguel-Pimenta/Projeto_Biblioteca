@@ -11,9 +11,9 @@ const emprestimoController = new EmprestimoController()
 emprestimosRoutes.post("/criar", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.criar);
 emprestimosRoutes.get("/emprestimos-leitor", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.listarPorLeitor);
 
-emprestimosRoutes.get("/", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listar);
-emprestimosRoutes.get("/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listarPorId);
+emprestimosRoutes.get("/listar", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listar);
+emprestimosRoutes.get("/buscar/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listarPorId);
 emprestimosRoutes.patch("/:id/devolucao", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.registrarDevolucao);
-emprestimosRoutes.delete("/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.deletar);
+emprestimosRoutes.delete("/deletar/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.deletar);
 
 export { emprestimosRoutes }

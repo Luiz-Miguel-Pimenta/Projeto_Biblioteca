@@ -1,5 +1,6 @@
 import { z } from "zod"
 import jwt from "jsonwebtoken"
+import { compare, hash } from "bcryptjs";
 
 import { AppError } from "../utils/AppError.js";
 import { database } from "../database/db.js"
@@ -24,10 +25,23 @@ class UsuarioController {
                 throw new AppError("Usuário já existe com esse email", 409)
             }
 
-            // [linhasEncontradas, metadados]
-            const [result] = await database.promise().query("INSERT INTO usuario (nome, email, senha, perfil) VALUES (?, ?, ?, ?)", [nome, email, senha, perfil])
+            const senhaHashed = await hash(senha, 8);
 
-            return res.status(201).json({ id:result.insertId, nome, email, perfil }); 
+            // [linhasEncontradas, metadados]
+            const [result] = await database.promise().query(
+                "INSERT INTO usuario (nome, email, senha, perfil) VALUES (?, ?, ?, ?)", 
+                [nome, email, senhaHashed, perfil]
+            )
+
+            return res.status(201).json({ 
+                message: "Usuário criado com Sucesso",
+                user: { 
+                    id:result.insertId, 
+                    nome, 
+                    email, 
+                    perfil 
+                }
+            }); 
 
         } catch (error) {
             console.log(error);
@@ -46,17 +60,23 @@ class UsuarioController {
             const { email, senha } = loginSchema.parse(req.body);
 
             // [linhasEncontradas, metadados]
-            const [result] = await database.promise().query("SELECT * FROM usuario WHERE email = ? AND senha = ?", [email, senha])
+            const [usuario] = await database.promise().query("SELECT * FROM usuario WHERE email = ?", [email])
 
-            if(result.length === 0) {
+            if(usuario.length === 0) {
+                throw new AppError("E-mail ou senha inválidos!", 401)
+            }
+
+            const senhasIguais = await compare(senha, usuario[0].senha);
+
+            if(!senhasIguais) {
                 throw new AppError("E-mail ou senha inválidos!", 401)
             }
 
             const token = jwt.sign(
-                { perfil: result[0].perfil },
+                { perfil: usuario[0].perfil },
                 process.env.JWT_SECRET,
                 {
-                    subject: String(result[0].id),
+                    subject: String(usuario[0].id),
                     expiresIn: "1d",
                 }
             )
@@ -65,8 +85,8 @@ class UsuarioController {
                 mensagem: "Login realizado com sucesso!",
                 token,
                 usuario: {
-                    nome: result[0].nome,
-                    email: result[0].email, 
+                    nome: usuario[0].nome,
+                    email: usuario[0].email, 
                 }
             })
 

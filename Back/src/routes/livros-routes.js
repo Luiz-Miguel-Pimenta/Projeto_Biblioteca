@@ -8,11 +8,11 @@ import { autorizacaoPerfil } from "../middlewares/autorizacaoPerfil.js";
 const livrosRoutes = Router();
 const livroController = new LivroController();
 
-livrosRoutes.get("/livros", autentificacaoToken, livroController.buscarLivros);
-livrosRoutes.get("/livros/:id", autentificacaoToken, livroController.buscarLivrosPorID);
+livrosRoutes.get("/listar", autentificacaoToken, livroController.buscarLivros);
+livrosRoutes.get("/buscar/:id", autentificacaoToken, livroController.buscarLivrosPorID);
 
-livrosRoutes.post("/livros", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), livroController.criarLivro);
-livrosRoutes.put("/livros/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), livroController.atualizarLivro);
-livrosRoutes.delete("/livros/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), livroController.excluirLivro);
+livrosRoutes.post("/criar", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), livroController.criarLivro);
+livrosRoutes.put("/atualizar/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), livroController.atualizarLivro);
+livrosRoutes.delete("/deletar/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), livroController.excluirLivro);
 
 export { livrosRoutes };
