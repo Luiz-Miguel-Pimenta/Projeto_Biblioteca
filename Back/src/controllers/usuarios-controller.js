@@ -34,13 +34,7 @@ class UsuarioController {
             )
 
             return res.status(201).json({ 
-                message: "Usuário criado com Sucesso",
-                user: { 
-                    id:result.insertId, 
-                    nome, 
-                    email, 
-                    perfil 
-                }
+                message: "Usuário cadastrodo com Sucesso",
             }); 
 
         } catch (error) {
@@ -86,7 +80,8 @@ class UsuarioController {
                 token,
                 usuario: {
                     nome: usuario[0].nome,
-                    email: usuario[0].email, 
+                    email: usuario[0].email,
+                    perfil: usuario[0].perfil, 
                 }
             })
 
