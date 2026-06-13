@@ -75,14 +75,12 @@ class UsuarioController {
                 }
             )
 
+            const { senha: _, ...usuarioLogado } = usuario[0];
+
             return res.status(200).json({ 
                 mensagem: "Login realizado com sucesso!",
                 token,
-                usuario: {
-                    nome: usuario[0].nome,
-                    email: usuario[0].email,
-                    perfil: usuario[0].perfil, 
-                }
+                usuario: usuarioLogado
             })
 
         } catch (error) {

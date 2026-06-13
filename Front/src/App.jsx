@@ -1,6 +1,11 @@
+import { AuthProvider } from "./contexts/AuthContext"
+import { AppRoutes } from "./routes"
+
 function App() {
   return (
-    <h1>Olá React</h1>
+    <AuthProvider >
+        <AppRoutes />
+    </AuthProvider>
   )
 }
 
