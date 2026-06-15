@@ -1,8 +1,10 @@
 import { Route, Routes } from "react-router";
 
+import { AuthLayout } from "../components/AuthLayout";
+
 import { Login } from "../pages/Login";
 import { Cadastrar } from "../pages/Cadastrar";
-import { AuthLayout } from "../components/AuthLayout";
+import { NotFound } from "../pages/NotFound";
 
 export function LogarRoutes() {
     return (
@@ -11,6 +13,8 @@ export function LogarRoutes() {
                 <Route path="/" element={<Login />} />
                 <Route path="/cadastrar" element={<Cadastrar />} />
             </Route>
+
+            <Route path="*" element={<NotFound />}/>
         </Routes>
     )
 }
