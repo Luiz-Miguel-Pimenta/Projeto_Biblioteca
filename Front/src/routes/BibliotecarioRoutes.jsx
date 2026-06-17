@@ -1,5 +1,19 @@
+import { Route, Routes } from "react-router";
+
+import { AppLayout } from "../components/AppLayout";
+
+import { NotFound } from "../pages/NotFound";
+
 export function BibliotecarioRoutes() {
     return (
-        <h1>Olá Bibliotecário</h1>
+        <Routes>
+            <Route path="/" element={<AppLayout />}>
+            
+            
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+        </Routes>
+
     )
 }
