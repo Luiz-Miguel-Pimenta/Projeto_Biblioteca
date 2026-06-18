@@ -18,36 +18,35 @@ database.connect(error => {
 
 export { database }
 
-/*
-CREATE DATABASE biblioteca;
 
-USE biblioteca;
+// CREATE DATABASE biblioteca;
 
-CREATE TABLE usuario (
-id INT PRIMARY KEY AUTO_INCREMENT,
-nome VARCHAR(150) NOT NULL,
-email VARCHAR(150) NOT NULL,
-senha VARCHAR(100) NOT NULL,
-perfil ENUM('bibliotecario', 'leitor') NOT NULL
-);
+// USE biblioteca;
 
-CREATE TABLE livro (
-id INT PRIMARY KEY AUTO_INCREMENT,
-titulo VARCHAR(150) NOT NULL,
-autor VARCHAR(150) NOT NULL,
-ano_publicacao INT,
-quantidade_disponivel INT NOT NULL
-);
+// CREATE TABLE usuario (
+// id INT PRIMARY KEY AUTO_INCREMENT,
+// nome VARCHAR(150) NOT NULL,
+// email VARCHAR(150) NOT NULL,
+// senha VARCHAR(100) NOT NULL,
+// perfil ENUM('bibliotecario', 'leitor') NOT NULL
+// );
 
-CREATE TABLE emprestimo (
-id INT PRIMARY KEY AUTO_INCREMENT,
-livro_id INT NOT NULL,
-leitor_id INT NOT NULL,
-data_emprestimo DATE NOT NULL,
-data_devolucao_prevista DATE NOT NULL,
-data_devolucao_real DATE,
-status ENUM('ativo', 'devolvido', 'atrasado') NOT NULL,
-FOREIGN KEY (livro_id) REFERENCES livro(id),
-FOREIGN KEY (leitor_id) REFERENCES usuario(id)
-);
-*/
+// CREATE TABLE livro (
+// id INT PRIMARY KEY AUTO_INCREMENT,
+// titulo VARCHAR(150) NOT NULL,
+// autor VARCHAR(150) NOT NULL,
+// ano_publicacao INT,
+// quantidade_disponivel INT NOT NULL
+// );
+
+// CREATE TABLE emprestimo (
+// id INT PRIMARY KEY AUTO_INCREMENT,
+// livro_id INT NOT NULL,
+// leitor_id INT NOT NULL,
+// data_emprestimo DATE NOT NULL,
+// data_devolucao_prevista DATE NOT NULL,
+// data_devolucao_real DATE,
+// status ENUM('ativo', 'devolvido', 'atrasado') NOT NULL,
+// FOREIGN KEY (livro_id) REFERENCES livro(id),
+// FOREIGN KEY (leitor_id) REFERENCES usuario(id)
+// );

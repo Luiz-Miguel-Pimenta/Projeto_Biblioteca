@@ -6,6 +6,7 @@ import { NotFound } from "../pages/NotFound";
 
 export function BibliotecarioRoutes() {
     return (
+<<<<<<< Updated upstream
         <Routes>
             <Route path="/" element={<AppLayout />}>
             
@@ -15,5 +16,8 @@ export function BibliotecarioRoutes() {
             <Route path="*" element={<NotFound />} />
         </Routes>
 
+=======
+        <h1>Olá Bibliotecário</h1>  
+>>>>>>> Stashed changes
     )
-}
+}git stash
