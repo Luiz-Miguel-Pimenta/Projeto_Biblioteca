@@ -1,23 +1,18 @@
 import { Route, Routes } from "react-router";
-
+import { PainelBibliotecario } from "../pages/PainelBibliotecario";
 import { AppLayout } from "../components/AppLayout";
-
 import { NotFound } from "../pages/NotFound";
 
 export function BibliotecarioRoutes() {
-    return (
-<<<<<<< Updated upstream
-        <Routes>
-            <Route path="/" element={<AppLayout />}>
-            
-            
-            </Route>
+  return (
+    <Routes>
+      <Route path="/" element={<AppLayout />}>
+          
+          <Route index element={<PainelBibliotecario />} />
+          
+      </Route>
 
-            <Route path="*" element={<NotFound />} />
-        </Routes>
-
-=======
-        <h1>Olá Bibliotecário</h1>  
->>>>>>> Stashed changes
-    )
-}git stash
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
