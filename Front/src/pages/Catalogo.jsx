@@ -1,5 +1,5 @@
-export function Catalogo () {
+export function Catalogo() {
     return (
-        <h1>Catalogo</h1>
+        <h1>Catálogo</h1>
     )
 }

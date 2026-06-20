@@ -1,15 +1,17 @@
 import { Route, Routes } from "react-router";
-import { PainelBibliotecario } from "../pages/PainelBibliotecario";
+
 import { AppLayout } from "../components/AppLayout";
+
 import { NotFound } from "../pages/NotFound";
+import { Catalogo } from "../pages/Catalogo";
+import { Emprestimos } from "../pages/Emprestimos";
 
 export function BibliotecarioRoutes() {
   return (
     <Routes>
       <Route path="/" element={<AppLayout />}>
-          
-          <Route index element={<PainelBibliotecario />} />
-          
+        <Route index element={<Catalogo />} />
+        <Route path="/emprestimos" element={<Emprestimos />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

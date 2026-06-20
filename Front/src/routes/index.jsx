@@ -12,7 +12,7 @@ export function AppRoutes() {
 
     function Route() {
 
-        switch (sessao?.usuario.perfil) {
+        switch (sessao?.usuario?.perfil) {
             case "bibliotecario":
                 return <BibliotecarioRoutes />
             case "leitor": 

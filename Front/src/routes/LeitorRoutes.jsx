@@ -4,13 +4,14 @@ import { AppLayout } from "../components/AppLayout";
 
 import { NotFound } from "../pages/NotFound"
 import { Catalogo } from "../pages/Catalogo";
+import { Emprestimos } from "../pages/Emprestimos";
 
 export function LeitorRoutes() {
     return (
         <Routes>
             <Route path="/" element={<AppLayout />}>
-                <Route path="/" element={<Catalogo />} />
-            
+                <Route index element={<Catalogo />} />
+                <Route path="/meus-emprestimos" element={<Emprestimos />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
