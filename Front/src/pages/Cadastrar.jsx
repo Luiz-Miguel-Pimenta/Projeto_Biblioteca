@@ -9,7 +9,6 @@ import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { Select } from "../components/Select";
 
-
 const cadastrarSchema = z.object({
     nome: z.string().trim().min(2, { message: "Nome é obrigatório" }),
     email: z.string().email({ message: "E-mail é obrigatório" }),
