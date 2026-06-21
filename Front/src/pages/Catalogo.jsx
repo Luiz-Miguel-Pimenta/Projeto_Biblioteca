@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Edit, Trash2 } from "lucide-react";
+import { Search, Edit, Trash2, BookPlus } from "lucide-react";
 import { AxiosError } from "axios";
 
 import { api } from "../services/api";
@@ -109,10 +109,11 @@ export function Catalogo() {
                     <p className="text-slate-500 text-sm">Explore o nossa biblioteca e encontre sua próxima leitura.</p>
                 </div>
 
-                <div className="w-full flex gap-4"> 
+                <div className="w-full flex gap-2"> 
                     {sessao?.usuario?.perfil === "bibliotecario" && (
-                        <Button onClick={() => setIsModalCriarAberto(true)}>
-                            Adicionar Livro
+                        <Button onClick={() => setIsModalCriarAberto(true)} className="flex gap-2">
+                            <BookPlus />
+                            Adicionar
                         </Button>
                     )}
                     
@@ -152,6 +153,7 @@ export function Catalogo() {
                             </>
                         ) : (
                             <Button
+                                tamanho="small"
                                 onClick={() => gerarEmprestimo(livro.id)}
                                 disabled={livro.quantidade_disponivel === 0}
                             >

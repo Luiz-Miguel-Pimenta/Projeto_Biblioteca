@@ -11,7 +11,7 @@ export function LeitorRoutes() {
         <Routes>
             <Route path="/" element={<AppLayout />}>
                 <Route index element={<Catalogo />} />
-                <Route path="/meus-emprestimos" element={<Emprestimos />} />
+                <Route path="/emprestimos" element={<Emprestimos />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
