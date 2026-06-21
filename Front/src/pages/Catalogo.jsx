@@ -103,9 +103,9 @@ export function Catalogo() {
                     <p className="text-slate-500 text-sm">Explore o nossa biblioteca e encontre sua próxima leitura.</p>
                 </div>
 
-                <div className="w-full flex gap-5"> 
+                <div className="w-full flex gap-4"> 
                     {sessao?.usuario?.perfil === "bibliotecario" && (
-                        <Button className="flex-1 w-auto" onClick={() => alert("Abrirá o modal de cadastro")}>
+                        <Button size="sm" onClick={() => alert("Abrirá o modal de cadastro")}>
                             Adicionar Livro
                         </Button>
                     )}
@@ -126,26 +126,27 @@ export function Catalogo() {
                     <LivroCard key={livro.id} livro={livro}>
                         {sessao?.usuario?.perfil === "bibliotecario" ? (
                             <>
-                                <button
+                                <Button
+                                    tema="fantasma"
+                                    tamanho="icon"
                                     onClick={() => alert("Abrirá a sobreposição de edição")}
-                                    className="p-2 rounded hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition"
-                                    title="Editar Livro"
+                                    className="hover:bg-slate-100"
                                 >
-                                    <Edit size={20} />
-                                </button>
+                                    <Edit size={22} />
+                                </Button>
 
-                                <button
+                                <Button 
+                                    tema="secundario"
+                                    tamanho="icon"
                                     onClick={() => excluirLivro(livro.id)}
-                                    className="p-2 rounded hover:bg-slate-100 text-slate-500 hover:text-red-600 transition"
-                                    title="Excluir Livro"
+                                    className="hover:bg-slate-100"
                                 >
-                                    <Trash2 size={20} />
-                                </button>
+                                    <Trash2 size={22} />
+                                </Button>
                             </>
                         ) : (
                             <Button
                                 onClick={() => gerarEmprestimo(livro.id)}
-                                className="h-10 px-6"
                                 disabled={livro.quantidade_disponivel === 0}
                             >
                                 Gerar Empréstimo

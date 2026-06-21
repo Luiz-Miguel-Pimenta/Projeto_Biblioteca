@@ -113,17 +113,18 @@ export function Cadastrar() {
                     <option value="bibliotecario">Bibliotecário</option>
                 </Select>
 
-                <Button type="submit" isLoading={isLoading}>
+                <Button type="submit" tema="principal" isLoading={isLoading} className="w-full">
                     Cadastrar
                 </Button>
 
-                <button
+                <Button
                     onClick={() => navigate("/")}
-                    className="text-sm font-semibold text-slate-500 
-                    mt-2 text-center hover:text-blue-600 cursor-pointer"
+                    tema="fantasma"
+                    tamanho="link"
+                    className="font-semibold mt-1"
                 >
                     Já tenho uma conta
-                </button>
+                </Button>
             </form>
         </div>
     )

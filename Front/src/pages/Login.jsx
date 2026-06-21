@@ -69,18 +69,19 @@ export function Login() {
                     </p>
                 )}
 
-                <Button type="submit" isLoading={isLoading}>
+                <Button type="submit" tema="principal" isLoading={isLoading} className="w-full">
                     Entrar
                 </Button>
             </form>
 
-            <button
+            <Button
                 onClick={() => navigate("/cadastrar")}
-                className="text-sm font-semibold text-slate-500 
-                mt-6 text-center hover:text-blue-600 cursor-pointer"
+                tema="fantasma"
+                tamanho="link"
+                className="font-semibold mt-5"
             >
                 Criar uma conta
-            </button>
+            </Button>
         </div>
     )
 }
