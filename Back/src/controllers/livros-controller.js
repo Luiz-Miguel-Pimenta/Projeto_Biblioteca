@@ -10,8 +10,7 @@ const livroSchema = z.object({
     .number()
     .int()
     .min(1000)
-    .max(new Date().getFullYear())
-    .optional(),
+    .max(new Date().getFullYear()),
   quantidade_disponivel: z
     .number()
     .int()

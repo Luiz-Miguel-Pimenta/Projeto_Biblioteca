@@ -1,8 +1,9 @@
 import { BookMarked } from "lucide-react"
 
-export function LivroCard({ livro, children }) {
+export function LivroCard({ livro, onClick, children }) {
     return (
         <div 
+            onClick={onClick}
             className="flex items-center bg-white hover:bg-slate-200 transition ease-in border 
             border-slate-300 rounded-lg cursor-pointer p-2 justify-between"
         >
@@ -30,7 +31,7 @@ export function LivroCard({ livro, children }) {
                     </span>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                     {children}
                 </div>
             </div>

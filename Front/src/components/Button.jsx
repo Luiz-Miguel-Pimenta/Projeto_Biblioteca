@@ -12,14 +12,14 @@ const tamanhos = {
     link: "h-6 text-sm"
 };
 
-export function Button({ children, isLoading, className="", type="button", tema = "principal", tamanho = "base", ...rest }) {
+export function Button({ children, isLoading, disabled, className="", type="button", tema = "principal", tamanho = "base", ...rest }) {
     return (
         <button
             type={type}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
             className={
-                `flex items-center px-1 justify-center rounded-lg font-bold transition-all ease-linear 
-                disabled:opacity-50 cursor-pointer
+                `flex items-center justify-center rounded-lg font-bold transition-all ease-linear 
+                disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed
                 ${temas[tema]} 
                 ${tamanhos[tamanho]}
                 ${className}
