@@ -127,6 +127,12 @@ export function Catalogo() {
             </div>
 
             <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-4">
+                {livrosFiltrados.length === 0 && (
+                    <p className="text-center text-slate-500 mt-10">
+                        Nenhum livro encontrado
+                    </p>
+                )}
+                
                 {livrosFiltrados.map((livro) => (
                     <LivroCard key={livro.id} livro={livro} onClick={() => setLivroDetalhes(livro)}>
                         {sessao?.usuario?.perfil === "bibliotecario" ? (
@@ -160,12 +166,6 @@ export function Catalogo() {
                         )}
                     </LivroCard>
                 ))}
-
-                {livrosFiltrados.length === 0 && (
-                    <p className="text-center text-slate-500 mt-10">
-                        Nenhum livro encontrado
-                    </p>
-                )}
             </div>
 
             {isModalCriarAberto && (

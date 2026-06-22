@@ -7,6 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
+import { EmprestimoCard } from "../components/EmprestimoCard";
 
 export function Emprestimos() {
     const [emprestimos, setEmprestimos] = useState([]);
@@ -68,7 +69,19 @@ export function Emprestimos() {
             </div>
 
             <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-4">
-
+                {emprestimosFiltrados.length === 0 && (
+                    <p className="text-center text-slate-500 mt-10">
+                        Nenhum livro encontrado
+                    </p>
+                )}
+                
+                {emprestimosFiltrados.map((emprestimo) => (
+                    <EmprestimoCard 
+                        key={emprestimo.id}
+                        onClick={() => alert("ver Detalhes")}
+                        emprestimo={emprestimo}
+                    />
+                ))}
             </div>
         </div>
     )
