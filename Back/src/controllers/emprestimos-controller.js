@@ -65,7 +65,22 @@ class EmprestimoController {
                 AND data_devolucao_real IS NULL
             `);
 
-            const [result] = await database.promise().query(`SELECT * FROM emprestimo`);
+            const [result] = await database.promise().query(`
+                    SELECT 
+                        e.id,
+                        e.data_emprestimo,
+                        e.data_devolucao_prevista,
+                        e.data_devolucao_real,
+                        e.status,
+                        e.livro_id,
+                        l.titulo AS livro_titulo,
+                        e.leitor_id,
+                        u.nome AS leitor_nome
+                    FROM emprestimo e
+                    INNER JOIN livro l ON e.livro_id = l.id
+                    INNER JOIN usuario u ON e.leitor_id = u.id
+                    ORDER BY e.data_emprestimo DESC
+                `);
 
             if (result.length === 0) {
                 throw new AppError("Nenhum empréstimo encontrado", 404);
@@ -87,7 +102,22 @@ class EmprestimoController {
                 throw new AppError("ID inválido!", 400);
             }
             
-            const [result] = await database.promise().query(`SELECT * FROM emprestimo WHERE id = ?`, [id]);
+            const [result] = await database.promise().query(`
+                SELECT 
+                    e.id,
+                    e.data_emprestimo,
+                    e.data_devolucao_prevista,
+                    e.data_devolucao_real,
+                    e.status,
+                    e.livro_id,
+                    l.titulo AS livro_titulo,
+                    e.leitor_id,
+                    u.nome AS leitor_nome
+                FROM emprestimo e
+                INNER JOIN livro l ON e.livro_id = l.id
+                INNER JOIN usuario u ON e.leitor_id = u.id
+                WHERE e.id = ?
+            `, [id]);
 
             if (result.length === 0) {
                 throw new AppError("Empréstimo não encontrado", 404);
@@ -113,7 +143,19 @@ class EmprestimoController {
                 AND data_devolucao_real IS NULL
             `);
 
-            const [result] = await database.promise().query(`SELECT * FROM emprestimo WHERE leitor_id = ? AND status IN ('ativo', 'atrasado')`, [leitor_id]);
+            const [result] = await database.promise().query(`
+                SELECT 
+                    e.id,
+                    e.data_emprestimo,
+                    e.data_devolucao_prevista,
+                    e.status,
+                    e.livro_id,
+                    l.titulo AS livro_titulo
+                FROM emprestimo e
+                INNER JOIN livro l ON e.livro_id = l.id
+                WHERE e.leitor_id = ? AND e.status IN ('ativo', 'atrasado')
+                ORDER BY e.data_devolucao_prevista ASC
+            `, [leitor_id]);
 
             if (result.length === 0) {
                 throw new AppError("Nenhum empréstimo feito até o momento", 404);
