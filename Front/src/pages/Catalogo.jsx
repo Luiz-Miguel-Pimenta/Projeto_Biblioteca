@@ -27,8 +27,6 @@ export function Catalogo() {
             const response = await api.get("/livro/listar");
 
             setLivros(response.data);
-
-            console.log(response.data);
             
         } catch (error) {
             console.log(error);
