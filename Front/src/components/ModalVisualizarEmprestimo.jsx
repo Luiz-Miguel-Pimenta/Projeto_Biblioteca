@@ -3,7 +3,7 @@ import { X, CheckCircle2, Trash2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { api } from "../services/api";
 
-export function ModalAlterarStatus({ emprestimo, onClose, onConfirm }) {
+export function ModalVisualizarEmprestimo({ emprestimo, onClose, onConfirm }) {
   const [carregando, setCarregando] = useState(false);
 
   if (!emprestimo) return null;
