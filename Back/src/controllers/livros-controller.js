@@ -18,7 +18,7 @@ const livroSchema = z.object({
 });
 
 class LivroController {
-  // GET ALL
+
   async buscarLivros(req, res, next) {
 
     try {
@@ -36,7 +36,6 @@ class LivroController {
     }
   }
 
-  // GET BY ID
   async buscarLivrosPorID(req, res, next) {
     try {
       const { id } = req.params;
@@ -59,7 +58,6 @@ class LivroController {
     }
   }
 
-  // POST
   async criarLivro(req, res, next) {
     try {
       const { titulo, autor, ano_publicacao, quantidade_disponivel } = livroSchema.parse(req.body);
@@ -93,7 +91,6 @@ class LivroController {
     }
   }
 
-  // PUT
   async atualizarLivro(req, res, next) {
     try {
       const { id } = req.params;
@@ -126,7 +123,6 @@ class LivroController {
     }
   }
 
-  // DELETE
   async excluirLivro(req, res, next) {
     try {
       const { id } = req.params;

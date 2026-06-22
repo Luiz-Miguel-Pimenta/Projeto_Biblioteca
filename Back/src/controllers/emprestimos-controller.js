@@ -5,7 +5,6 @@ import { AppError } from "../utils/AppError.js";
 
 class EmprestimoController {
 
-    // POST - Criar empréstimo (apenas leitor)
     async criar(req, res, next) {
         try {
             const emprestimoSchema = z.object({
@@ -56,7 +55,6 @@ class EmprestimoController {
         }
     }
 
-    // GET ALL - apenas bibliotecário
     async listar(req, res, next) {
         try {
             await database.promise().query(`
@@ -81,7 +79,6 @@ class EmprestimoController {
         }
     }
 
-    // GET ID - apenas bibliotecário
     async listarPorId(req, res, next) {
         try {
             const { id } = req.params;
@@ -104,7 +101,6 @@ class EmprestimoController {
         }
     }
 
-    // GET por leitor - apenas leitor
     async listarPorLeitor(req, res, next) {
         try {
             const leitor_id = req.usuario.id;
@@ -131,7 +127,6 @@ class EmprestimoController {
         }
     }
 
-    // PUT - apenas bibliotecário
     async registrarDevolucao(req, res, next) {
         try {
             const { id } = req.params;
@@ -159,7 +154,6 @@ class EmprestimoController {
         }
     }
 
-    // DELETE - apenas bibliotecário
     async deletar(req, res, next) {
         try {
             const { id } = req.params;
