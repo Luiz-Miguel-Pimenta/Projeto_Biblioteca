@@ -27,7 +27,6 @@ class UsuarioController {
 
             const senhaHashed = await hash(senha, 8);
 
-            // [linhasEncontradas, metadados]
             const [result] = await database.promise().query(
                 "INSERT INTO usuario (nome, email, senha, perfil) VALUES (?, ?, ?, ?)", 
                 [nome, email, senhaHashed, perfil]
@@ -53,7 +52,6 @@ class UsuarioController {
 
             const { email, senha } = loginSchema.parse(req.body);
 
-            // [linhasEncontradas, metadados]
             const [usuario] = await database.promise().query("SELECT * FROM usuario WHERE email = ?", [email])
 
             if(usuario.length === 0) {

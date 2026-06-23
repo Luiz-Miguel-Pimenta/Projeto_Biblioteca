@@ -15,7 +15,7 @@ const loginSchema = z.object({
 });
 
 export function Login() {
-    const [state, formAction, isLoading] = useActionState(fazerLogin, null);//null = estado inicial
+    const [state, formAction, isLoading] = useActionState(fazerLogin, null);
 
     const navigate = useNavigate();
     const auth = useAuth();
