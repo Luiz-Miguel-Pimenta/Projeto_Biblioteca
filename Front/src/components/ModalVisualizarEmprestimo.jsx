@@ -59,7 +59,7 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
         setIsLoading(true);
 
         try {
-            await api.delete(`/emprestimo/${emprestimo.id}`);
+            await api.delete(`/emprestimo/deletar/${emprestimo.id}`);
 
             alert("Empréstimo cancelado e excluído com sucesso!");
 

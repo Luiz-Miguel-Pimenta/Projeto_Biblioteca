@@ -42,7 +42,7 @@ export function Emprestimos() {
     }, []);
 
     const emprestimosFiltrados = emprestimos.filter((emprestimo) =>
-        emprestimo.livro_titulo.toLowerCase().includes(busca),
+        emprestimo.livro_titulo.toLowerCase().includes(busca.toLowerCase()),
     );
 
     return (
