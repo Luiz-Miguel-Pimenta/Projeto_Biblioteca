@@ -40,3 +40,16 @@ INSERT INTO livro (titulo, autor, ano_publicacao, quantidade_disponivel) VALUES
 ('Sapiens: Uma Breve História da Humanidade', 'Yuval Noah Harari', 2011, 4),
 ('O Alquimista', 'Paulo Coelho', 1988, 10);
 
+INSERT INTO emprestimo (livro_id, leitor_id, data_emprestimo, data_devolucao_prevista, data_devolucao_real, status) VALUES 
+
+(1, 1, CURDATE() - INTERVAL 5 DAY, CURDATE() + INTERVAL 25 DAY, NULL, 'ativo'),
+(2, 1, CURDATE() - INTERVAL 2 DAY, CURDATE() + INTERVAL 28 DAY, NULL, 'ativo'),
+
+(3, 1, '2026-05-01', '2026-05-31', '2026-05-20', 'devolvido'),
+(4, 1, '2026-04-10', '2026-05-10', '2026-05-08', 'devolvido'),
+
+(5, 1, '2026-04-01', '2026-05-01', NULL, 'atrasado'),
+(6, 1, '2026-03-15', '2026-04-15', NULL, 'atrasado'),
+
+(7, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, NULL, 'pendente'),
+(8, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, NULL, 'pendente');
