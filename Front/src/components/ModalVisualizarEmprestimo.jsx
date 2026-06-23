@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Undo2, CheckCircle2, Trash2 } from "lucide-react";
+import { Undo2, CheckCircle2, Trash2, ClockAlert } from "lucide-react";
 import { AxiosError } from "axios";
 
 import { api } from "../services/api";
@@ -16,13 +16,40 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
         ativo: "bg-blue-100 text-blue-700",
         devolvido: "bg-emerald-100 text-emerald-700",
         atrasado: "bg-red-100 text-red-700",
+        pendente: "bg-amber-100 text-amber-700",
     };
 
     if (!emprestimo) return null;
 
-    async function RegistrarDevolucao() {
+    async function SolicitarDevolucao() {
         const confirmar = window.confirm(
-            `Tem certeza que deseja registrar a devolução do empréstimo #${emprestimo.id}?`,
+            `Deseja solicitar a devolução do emprestimo #${emprestimo.id} para a biblioteca?`
+        );
+
+        if (!confirmar) return;
+
+        setIsLoading(true);
+        
+        try {
+            await api.patch(`/emprestimo/${emprestimo.id}/solicitar-devolucao`);
+
+            alert("Devolução solicitada! Entregue o livro ao bibliotecário para aprovação.");
+
+            onSuccess();
+            onClose();
+        } catch (error) {
+            if (error instanceof AxiosError) { 
+                return alert(error.response?.data?.message || "Erro ao solicitar devolução.");
+            }
+            alert("Erro ao conectar com o servidor.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    async function AprovarDevolucao() {
+        const confirmar = window.confirm(
+            `Aprovar a devolução do empréstimo #${emprestimo.id}?`,
         );
 
         if (!confirmar) return;
@@ -32,7 +59,7 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
         try {
             await api.patch(`/emprestimo/${emprestimo.id}/devolucao`);
 
-            alert("Devolução registrada com sucesso!");
+            alert("Devolução aprovada e registrada com sucesso!");
 
             onSuccess();
             onClose();
@@ -118,15 +145,31 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
                     
                     <div className="pt-2 mt-2 border-t border-slate-200 flex items-center gap-2">
                         <strong>Status Atual:</strong>
-                        <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide
-                                ${coresStatus[emprestimo.status]}
-                            `}
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide
+                                ${coresStatus[emprestimo.status]}`}
                         >
                             {emprestimo.status}
                         </span>
                     </div>
                 </div>
+
+                {sessao?.usuario?.perfil === "leitor" && (
+                    <div className="flex flex-col gap-3">
+                        <button 
+                            disabled={isLoading || emprestimo.status === "pendente"}
+                            onClick={SolicitarDevolucao}
+                            className="w-full flex items-center justify-between p-3 rounded-xl 
+                            border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 
+                            font-semibold disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                        >
+                            <div className="flex items-center gap-2">
+                                <ClockAlert size={20} />
+                                <span>Solicitar Devolução</span>
+                            </div>
+                            <span className="text-xs font-normal text-amber-600">Avisar biblioteca</span>
+                        </button>
+                    </div>
+                )}
 
                 {sessao?.usuario?.perfil === "bibliotecario" && (
                     <>
@@ -136,8 +179,8 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
 
                         <div className="flex flex-col gap-3">
                             <button
-                                disabled={isLoading || emprestimo.status === "devolvido"}
-                                onClick={RegistrarDevolucao}
+                                disabled={isLoading || emprestimo.status !== "pendente"}
+                                onClick={AprovarDevolucao}
                                 className="w-full flex items-center justify-between p-3 rounded-xl 
                                 border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 
                                 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
@@ -145,9 +188,9 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
                                 <div className="flex items-center gap-2">
                                     <CheckCircle2 size={20} />
                                     <span>
-                                        {emprestimo.status === "devolvido"
-                                            ? "Já Devolvido"
-                                            : "Registrar Devolução"
+                                        {emprestimo.status === "pendente"
+                                            ? "Aprovar Devolução"
+                                            : "Aguardando Leitor"
                                         }
                                     </span>
                                 </div>

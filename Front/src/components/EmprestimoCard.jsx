@@ -5,6 +5,7 @@ export function EmprestimoCard({ emprestimo, onClick }) {
         ativo: "bg-blue-100 text-blue-700",
         devolvido: "bg-emerald-100 text-emerald-700",
         atrasado: "bg-red-100 text-red-700",
+        pendente: "bg-amber-100 text-amber-700"
     };
 
     const colorDiv = coresStatus[emprestimo.status] || "bg-slate-100 text-slate-700";

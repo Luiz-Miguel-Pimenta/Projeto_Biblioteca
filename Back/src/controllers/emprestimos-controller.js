@@ -118,7 +118,7 @@ class EmprestimoController {
                 FROM emprestimo e
                 INNER JOIN livro l ON e.livro_id = l.id
                 INNER JOIN usuario u ON e.leitor_id = u.id
-                WHERE e.leitor_id = ? AND e.status IN ('ativo', 'atrasado')
+                WHERE e.leitor_id = ?
                 ORDER BY e.id ASC
             `, [leitor_id]);
 
@@ -134,6 +134,38 @@ class EmprestimoController {
         }
     }
 
+    async solicitarDevolucao(req, res, next){
+        try {
+            const { id } = req.params;
+
+            if(isNaN(id)){
+                throw new AppError("ID invalido",400);
+            }
+
+            const [emprestimo] = await database.promise().query(`SELECT * FROM  emprestimo WHERE id = ?`,[id]);
+
+            if (emprestimo.length === 0) {
+                throw new AppError("Empréstimo não encontrado", 404);
+            }
+
+            if(emprestimo[0].status === 'devolvido'){
+                throw new AppError("Este emprestimo já foi devolvido",400);
+            }
+
+            if(emprestimo[0].status === 'pendente'){
+                throw new AppError("A devolução deste emprestimo já foi solicitada",400);
+            }
+
+            await database.promise().query(`UPDATE emprestimo SET status = 'pendente' WHERE id = ?`,[id]);
+
+            return res.status(200).json({ message: "Devolução solicitada! Aguarde a aprovção do bibliotecario" });
+
+        } catch (error) {
+            console.error("Erro ao solicitar devolução:", error);
+            next(error)
+        }
+    }
+    
     async registrarDevolucao(req, res, next) {
         try {
             const { id } = req.params;
@@ -145,8 +177,8 @@ class EmprestimoController {
                 throw new AppError("Empréstimo não encontrado", 404);
             }
 
-            if (emprestimo[0].status === 'devolvido') {
-                throw new AppError("Este empréstimo já foi devolvido", 400);
+            if (emprestimo[0].status !== 'pendente') {
+                throw new AppError("O leitor não resgistrou a devolução deste empréstimo.", 400);
             }
             
             await database.promise().query(`UPDATE emprestimo SET data_devolucao_real = ?, status = ? WHERE id = ?`, [data_devolucao_real, 'devolvido', id]);
@@ -175,7 +207,7 @@ class EmprestimoController {
                 throw new AppError("Empréstimo não encontrado", 404);
             }
 
-            if (emprestimo[0].status === 'ativo' || emprestimo[0].status === 'atrasado') {
+            if (emprestimo[0].status === 'ativo' || emprestimo[0].status === 'atrasado' || emprestimo[0].status === 'pendente') {
                 await database.promise().query(`UPDATE livro SET quantidade_disponivel = quantidade_disponivel + 1 WHERE id = ?`, [emprestimo[0].livro_id]);
             }
 

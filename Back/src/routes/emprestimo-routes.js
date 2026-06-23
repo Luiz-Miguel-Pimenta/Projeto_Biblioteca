@@ -10,6 +10,7 @@ const emprestimoController = new EmprestimoController()
 
 emprestimosRoutes.post("/criar", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.criar);
 emprestimosRoutes.get("/emprestimos-leitor", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.listarPorLeitor);
+emprestimosRoutes.patch("/:id/solicitar-devolucao", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.solicitarDevolucao);
 
 emprestimosRoutes.get("/listar", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listar);
 emprestimosRoutes.patch("/:id/devolucao", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.registrarDevolucao);
