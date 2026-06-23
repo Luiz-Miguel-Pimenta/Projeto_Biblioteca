@@ -111,6 +111,7 @@ class EmprestimoController {
                     e.id,
                     e.data_emprestimo,
                     e.data_devolucao_prevista,
+                    e.data_devolucao_real,
                     e.status,
                     e.livro_id,
                     l.titulo AS livro_titulo,
@@ -137,12 +138,13 @@ class EmprestimoController {
     async solicitarDevolucao(req, res, next){
         try {
             const { id } = req.params;
+            const leitor_id = req.usuario.id;
 
             if(isNaN(id)){
                 throw new AppError("ID invalido",400);
             }
 
-            const [emprestimo] = await database.promise().query(`SELECT * FROM  emprestimo WHERE id = ?`,[id]);
+            const [emprestimo] = await database.promise().query(`SELECT * FROM  emprestimo WHERE id = ? AND leitor_id = ?`,[id, leitor_id]);
 
             if (emprestimo.length === 0) {
                 throw new AppError("Empréstimo não encontrado", 404);

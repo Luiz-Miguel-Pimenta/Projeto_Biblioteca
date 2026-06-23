@@ -107,6 +107,7 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
 
     const dataVencimento = new Date(emprestimo.data_devolucao_prevista).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
     const dataEmprestimo = new Date(emprestimo.data_emprestimo).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+    const dataDevolucaoReal = emprestimo.data_devolucao_real ? new Date(emprestimo.data_devolucao_real).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : null;
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -142,6 +143,12 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
                     <p>
                         <strong>Data de Vencimento:</strong> {dataVencimento}
                     </p>
+
+                    {dataDevolucaoReal && (
+                        <p className="text-emerald-600 font-medium">
+                            <strong>Devolvido em:</strong> {dataDevolucaoReal}
+                        </p>
+                    )}
                     
                     <div className="pt-2 mt-2 border-t border-slate-200 flex items-center gap-2">
                         <strong>Status Atual:</strong>
@@ -155,19 +162,29 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
 
                 {sessao?.usuario?.perfil === "leitor" && (
                     <div className="flex flex-col gap-3">
-                        <button 
+                        {emprestimo.status === "devolvido" ? (
+                            <div 
+                                className="w-full flex items-center justify-center gap-2 p-3 
+                                rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold">
+                                <CheckCircle2 size={22} />
+                                <span>Devolvido em {dataDevolucaoReal}</span>
+                            </div>
+                        ) : (
+                            <button 
                             disabled={isLoading || emprestimo.status === "pendente"}
                             onClick={SolicitarDevolucao}
                             className="w-full flex items-center justify-between p-3 rounded-xl 
                             border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 
                             font-semibold disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-                        >
-                            <div className="flex items-center gap-2">
-                                <ClockAlert size={20} />
-                                <span>Solicitar Devolução</span>
-                            </div>
-                            <span className="text-xs font-normal text-amber-600">Avisar biblioteca</span>
-                        </button>
+                            >   
+                                <div className="flex items-center gap-2">
+                                    <ClockAlert size={20} />
+                                    <span>Solicitar Devolução</span>
+                                </div>
+                                <span className="text-xs font-normal text-amber-600">Avisar biblioteca</span>
+                            </button>
+                        )}
+                        
                     </div>
                 )}
 
@@ -178,28 +195,30 @@ export function ModalVisualizarEmprestimo({ emprestimo, onClose, onSuccess }) {
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <button
+                            {emprestimo.status !== "devolvido" && (
+                                <button
                                 disabled={isLoading || emprestimo.status !== "pendente"}
                                 onClick={AprovarDevolucao}
                                 className="w-full flex items-center justify-between p-3 rounded-xl 
                                 border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 
                                 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle2 size={20} />
-                                    <span>
-                                        {emprestimo.status === "pendente"
-                                            ? "Aprovar Devolução"
-                                            : "Aguardando Leitor"
-                                        }
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle2 size={20} />
+                                        <span>
+                                            {emprestimo.status === "pendente"
+                                                ? "Aprovar Devolução"
+                                                : "Aguardando Leitor"
+                                            }
+                                        </span>
+                                    </div>
+
+                                    <span className="text-xs font-normal text-emerald-600">
+                                        Devolve estoque (+1)
                                     </span>
-                                </div>
-
-                                <span className="text-xs font-normal text-emerald-600">
-                                    Devolve estoque (+1)
-                                </span>
                             </button>
-
+                            )}
+                            
                             <button
                                 disabled={isLoading}
                                 onClick={CancelarEmprestimo}
