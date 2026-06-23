@@ -94,43 +94,6 @@ class EmprestimoController {
         }
     }
 
-    async listarPorId(req, res, next) {
-        try {
-            const { id } = req.params;
-
-            if (isNaN(id)) {
-                throw new AppError("ID inválido!", 400);
-            }
-            
-            const [result] = await database.promise().query(`
-                SELECT 
-                    e.id,
-                    e.data_emprestimo,
-                    e.data_devolucao_prevista,
-                    e.data_devolucao_real,
-                    e.status,
-                    e.livro_id,
-                    l.titulo AS livro_titulo,
-                    e.leitor_id,
-                    u.nome AS leitor_nome
-                FROM emprestimo e
-                INNER JOIN livro l ON e.livro_id = l.id
-                INNER JOIN usuario u ON e.leitor_id = u.id
-                WHERE e.id = ?
-            `, [id]);
-
-            if (result.length === 0) {
-                throw new AppError("Empréstimo não encontrado", 404);
-            }
-
-            return res.status(200).json(result[0]);
-
-        } catch (error) {
-            console.error("Erro ao listar empréstimo:", error);
-            next(error)
-        }
-    }
-
     async listarPorLeitor(req, res, next) {
         try {
             const leitor_id = req.usuario.id;
@@ -150,9 +113,11 @@ class EmprestimoController {
                     e.data_devolucao_prevista,
                     e.status,
                     e.livro_id,
-                    l.titulo AS livro_titulo
+                    l.titulo AS livro_titulo,
+                    u.nome AS leitor_nome
                 FROM emprestimo e
                 INNER JOIN livro l ON e.livro_id = l.id
+                INNER JOIN usuario u ON e.leitor_id = u.id
                 WHERE e.leitor_id = ? AND e.status IN ('ativo', 'atrasado')
                 ORDER BY e.data_devolucao_prevista ASC
             `, [leitor_id]);

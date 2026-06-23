@@ -12,7 +12,6 @@ emprestimosRoutes.post("/criar", autentificacaoToken, autorizacaoPerfil(["leitor
 emprestimosRoutes.get("/emprestimos-leitor", autentificacaoToken, autorizacaoPerfil(["leitor"]), emprestimoController.listarPorLeitor);
 
 emprestimosRoutes.get("/listar", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listar);
-emprestimosRoutes.get("/buscar/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.listarPorId);
 emprestimosRoutes.patch("/:id/devolucao", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.registrarDevolucao);
 emprestimosRoutes.delete("/deletar/:id", autentificacaoToken, autorizacaoPerfil(["bibliotecario"]), emprestimoController.deletar);
 
