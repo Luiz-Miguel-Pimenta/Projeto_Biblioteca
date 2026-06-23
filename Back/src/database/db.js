@@ -50,3 +50,13 @@ export { database }
 // FOREIGN KEY (livro_id) REFERENCES livro(id),
 // FOREIGN KEY (leitor_id) REFERENCES usuario(id)
 // );
+
+//INSERT INTO livro (titulo, autor, ano_publicacao, quantidade_disponivel) VALUES 
+//('Código Limpo', 'Robert C. Martin', 2009, 5),
+//('Arquitetura Limpa', 'Robert C. Martin', 2017, 3),
+//('O Design do Dia a Dia', 'Don Norman', 1988, 4),
+//('Dom Casmurro', 'Machado de Assis', 1899, 8),
+//('1984', 'George Orwell', 1949, 6),
+//('O Hobbit', 'J.R.R. Tolkien', 1937, 7),
+//('Sapiens: Uma Breve História da Humanidade', 'Yuval Noah Harari', 2011, 4),
+//('O Alquimista', 'Paulo Coelho', 1988, 10);

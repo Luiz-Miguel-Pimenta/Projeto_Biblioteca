@@ -79,7 +79,7 @@ class EmprestimoController {
                     FROM emprestimo e
                     INNER JOIN livro l ON e.livro_id = l.id
                     INNER JOIN usuario u ON e.leitor_id = u.id
-                    ORDER BY e.data_emprestimo DESC
+                    ORDER BY e.id DESC
                 `);
 
             if (result.length === 0) {
@@ -119,7 +119,7 @@ class EmprestimoController {
                 INNER JOIN livro l ON e.livro_id = l.id
                 INNER JOIN usuario u ON e.leitor_id = u.id
                 WHERE e.leitor_id = ? AND e.status IN ('ativo', 'atrasado')
-                ORDER BY e.data_devolucao_prevista ASC
+                ORDER BY e.id ASC
             `, [leitor_id]);
 
             if (result.length === 0) {
